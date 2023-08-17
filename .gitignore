@@ -1,7 +1,7 @@
 # Compiled class file
 *.class
 
-# Log file
+# Log files
 *.log
 
 # BlueJ files
@@ -10,7 +10,7 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -18,7 +18,47 @@
 *.zip
 *.tar.gz
 *.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+target/
+# Virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+# Node.js and npm
+node_modules/
+node/
+npm-debug.log
+yarn-error.log
+.pnp*
+.pnp.js
+
+# Dependency directories
+pids
+logs
+*.pid
+
+# Built output
+dist/
+build/
+out/
+
+# Local development files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+# IntelliJ IDEA
+.idea/
+
+# Visual Studio Code
+.vscode/
+.settings/

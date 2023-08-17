@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.minhhoangvn</groupId>
+    <artifactId>sonar-microsoft-teams-notifier</artifactId>
+    <packaging>sonar-plugin</packaging>
+    <version>1.0</version>
+
+    <name>Plugin for notifying result to Microsoft Teams with SonarQube 10.x</name>
+    <description>Example of Plugin for SonarQube: Foo Language, FooLint, Custom Metrics and MeasureComputers</description>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdk.min.version>17</jdk.min.version>
+        <sonar.api.version>10.1.0.809</sonar.api.version>
+        <sonar.sources>src/main/java,src/main/js</sonar.sources>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.sonarsource.api.plugin</groupId>
+            <artifactId>sonar-plugin-api</artifactId>
+            <version>${sonar.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!-- packaged with the plugin -->
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+                <artifactId>sonar-packaging-maven-plugin</artifactId>
+                <version>1.21.0.505</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <pluginKey>msteamsnotifier</pluginKey>
+                    <pluginName>sonar-microsoft-teams-notifier</pluginName>
+                    <pluginClass>io.github.minhhoangvn.MicrosoftTeamsNotifyPlugin</pluginClass>
+                    <sonarQubeMinVersion>9.5</sonarQubeMinVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- UTF-8 bundles are not supported by Java, so they must be converted during build -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native2ascii-maven-plugin</artifactId>
+                <version>2.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <id>install node and yarn</id>
+                        <goals>
+                            <goal>install-node-and-yarn</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>v16.14.0</nodeVersion>
+                            <yarnVersion>v1.22.5</yarnVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>yarn install</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <id>yarn run script</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
