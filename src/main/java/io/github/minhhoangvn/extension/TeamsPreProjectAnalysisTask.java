@@ -1,17 +1,17 @@
 package io.github.minhhoangvn.extension;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 
 public class TeamsPreProjectAnalysisTask implements Sensor {
 
   /**
    * Logger.
    */
-  private static final Logger LOG = Loggers.get(TeamsPreProjectAnalysisTask.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TeamsPreProjectAnalysisTask.class);
 
   @Override
   public void describe(SensorDescriptor sensorDescriptor) {

@@ -10,17 +10,26 @@
     <version>1.0</version>
 
     <name>Plugin for notifying result to Microsoft Teams with SonarQube 10.x</name>
-    <description>Example of Plugin for SonarQube: Foo Language, FooLint, Custom Metrics and MeasureComputers</description>
+    <description>Example of Plugin for SonarQube: Foo Language, FooLint, Custom Metrics and
+        MeasureComputers
+    </description>
 
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.min.version>17</jdk.min.version>
         <sonar.api.version>10.1.0.809</sonar.api.version>
+        <sonar.testing.harness.version>10.1.0.73491</sonar.testing.harness.version>
         <sonar.sources>src/main/java,src/main/js</sonar.sources>
+        <common.lang.version>2.6</common.lang.version>
+        <okhttp.version>5.0.0-alpha.11</okhttp.version>
+        <json.version>20230618</json.version>
+        <testng.version>7.8.0</testng.version>
+        <wiremock.version>3.0.0-beta-10</wiremock.version>
     </properties>
 
     <dependencies>
+        <!-- packaged with the plugin -->
         <dependency>
             <groupId>org.sonarsource.api.plugin</groupId>
             <artifactId>sonar-plugin-api</artifactId>
@@ -28,11 +37,41 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <!-- packaged with the plugin -->
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <version>${common.lang.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${json.version}</version>
+        </dependency>
+
+        <!-- unit tests -->
+        <dependency>
+            <groupId>org.sonarsource.sonarqube</groupId>
+            <artifactId>sonar-testing-harness</artifactId>
+            <version>${sonar.testing.harness.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>${wiremock.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 
