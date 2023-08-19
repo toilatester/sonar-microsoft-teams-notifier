@@ -19,23 +19,10 @@ public class TeamsPreProjectAnalysisTask implements Sensor {
   @Override
   public void describe(SensorDescriptor sensorDescriptor) {
     sensorDescriptor.name(getClass().getName());
-    LOG.info("Something to do pre scan: " + sensorDescriptor);
   }
 
   @Override
   public void execute(SensorContext sensorContext) {
-    LOG.info("Something to do pre scan sensorContext: " + sensorContext);
-    LOG.info("Something to do pre scan sonar.core.serverBaseURL: " + sensorContext.config()
-        .get("sonar.core.serverBaseURL").orElseGet(() -> "N/A"));
-    LOG.info(
-        "Something to do pre scan sonar.host.url: " + sensorContext.config().get("sonar.host.url")
-            .orElseGet(() -> "N/A"));
-    LOG.info("Something to do pre scan sonar.microsoft.team.notify.webhook.url: "
-        + sensorContext.config().get("sonar.microsoft.team.notify.webhook.url")
-        .orElseGet(() -> "N/A"));
-    LOG.info("Something to do pre scan sonar.microsoft.team.notify.webhook.title: "
-        + sensorContext.config().get("sonar.microsoft.team.notify.webhook.title")
-        .orElseGet(() -> "N/A"));
     sensorContext.addContextProperty("sonar.host.url",
         sensorContext.config().get("sonar.host.url").get());
     sensorContext.addContextProperty("sonar.microsoft.team.notify.webhook.url",
