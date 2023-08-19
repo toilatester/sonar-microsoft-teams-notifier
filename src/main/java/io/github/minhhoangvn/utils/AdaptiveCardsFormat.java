@@ -1,6 +1,8 @@
 package io.github.minhhoangvn.utils;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,8 +11,8 @@ import org.sonar.api.ce.posttask.QualityGate.Condition;
 
 public class AdaptiveCardsFormat {
 
-  public static String createMessageCardJSONPayload(ProjectAnalysis analysis) {
-    return createMessageCard(analysis, "").toString();
+  public static String createMessageCardJSONPayload(ProjectAnalysis analysis, String projectUrl) {
+    return createMessageCard(analysis, projectUrl).toString();
   }
 
   private static JSONObject createMessageCard(ProjectAnalysis analysis, String projectUrl) {
@@ -49,16 +51,20 @@ public class AdaptiveCardsFormat {
     JSONArray facts = new JSONArray();
     facts.put(createQualityGateFact(analysis));
 
-    Collection<Condition> conditions = Objects.requireNonNull(analysis.getQualityGate()).getConditions();
+    Collection<Condition> conditions = Objects.requireNonNull(analysis.getQualityGate())
+        .getConditions();
 
     conditions.parallelStream().forEach(condition -> {
       JSONObject qualityGateConditionFact = new JSONObject();
-      String conditionName = condition.getMetricKey();
+      String conditionName = convertSnakeToTitle(condition.getMetricKey());
       String conditionStatus = condition.getStatus().name();
-      String conditionStatusValue = condition.getStatus().name().equals("NO_VALUE") ? "N/A" : condition.getValue();
+      String conditionStatusValue =
+          condition.getStatus().name().equals("NO_VALUE") ? "N/A" : condition.getValue();
       String conditionOperator = condition.getOperator().name();
-      String conditionErrorThreshold = condition.getErrorThreshold();
-      qualityGateConditionFact.put("name", condition.getMetricKey());
+      String conditionErrorThreshold =
+          conditionName.contains("Rating") ? convertErrorThresholdNumberToString(
+              condition.getErrorThreshold()) : condition.getErrorThreshold();
+      qualityGateConditionFact.put("name", conditionName);
       qualityGateConditionFact.put("value",
           String.format("%s - %s: Current value is %s %s threshold value %s",
               conditionName,
@@ -101,5 +107,38 @@ public class AdaptiveCardsFormat {
     uriTarget.put("os", "default");
     uriTarget.put("uri", projectUrl);
     return uriTarget;
+  }
+
+  private static String convertSnakeToTitle(String snakeCase) {
+    StringBuilder titleCase = new StringBuilder();
+    boolean capitalizeNext = true;
+
+    for (char c : snakeCase.toCharArray()) {
+      if (c == '_') {
+        titleCase.append(' ');
+        capitalizeNext = true;
+      } else {
+        if (capitalizeNext) {
+          titleCase.append(Character.toUpperCase(c));
+          capitalizeNext = false;
+        } else {
+          titleCase.append(c);
+        }
+      }
+    }
+
+    return titleCase.toString();
+  }
+
+  private static String convertErrorThresholdNumberToString(String errorThreshold) {
+    Map<String, String> rattingMapping = new HashMap<>();
+    rattingMapping.put("1", "A");
+    rattingMapping.put("2", "B");
+    rattingMapping.put("3", "C");
+    rattingMapping.put("4", "D");
+    if (rattingMapping.containsKey(errorThreshold)) {
+      return rattingMapping.get(errorThreshold);
+    }
+    return "N/A";
   }
 }
