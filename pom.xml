@@ -114,6 +114,7 @@
                 <version>${sonar.packaging.maven.plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <jarName>sonar-microsoft-teams-notifier</jarName>
                     <pluginKey>msteamsnotifier</pluginKey>
                     <pluginName>Sonarqube Microsoft Teams Notify</pluginName>
                     <pluginClass>io.github.minhhoangvn.MSTeamsNotifyPlugin</pluginClass>
