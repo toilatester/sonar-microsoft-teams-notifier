@@ -6,6 +6,10 @@ The **Sonar Microsoft Teams Notifier** is a SonarQube plugin that seamlessly sen
 
 - **Automated Notifications**: Receive automated notifications in your Microsoft Teams channels whenever a SonarQube analysis is completed for your project.
 
+## Prerequisites
+
+Before setting up the Sonar Microsoft Teams Notifier plugin, make sure you have set up the incoming webhook in your Microsoft Teams channel by following the guide provided in the [Microsoft Teams documentation](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook?tabs=dotnet).
+
 ## Installation
 
 To set up the Sonar Microsoft Teams Notifier plugin, follow these steps:
