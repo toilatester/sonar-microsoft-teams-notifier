@@ -8,9 +8,27 @@
     <artifactId>sonar-microsoft-teams-notifier</artifactId>
     <packaging>sonar-plugin</packaging>
     <version>1.0</version>
-
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
     <name>sonar-microsoft-teams-notifier</name>
     <description>Plugin for notifying SonarQube result to Microsoft Teams</description>
+    <developers>
+        <developer>
+            <name>Minh Hoang</name>
+            <email>hnminh@outlook.com</email>
+            <timezone>+7</timezone>
+            <organizationUrl>https://toilatester.blog/</organizationUrl>
+            <roles>
+                <role>project owner</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
 
     <properties>
