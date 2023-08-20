@@ -63,3 +63,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./release_assets/README.md
           asset_name: README.md
+          asset_content_type: text/markdown
