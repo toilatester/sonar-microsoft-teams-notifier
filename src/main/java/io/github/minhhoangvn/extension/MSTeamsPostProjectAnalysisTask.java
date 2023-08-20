@@ -3,8 +3,9 @@ package io.github.minhhoangvn.extension;
 import io.github.minhhoangvn.client.MSTeamsWebHookClient;
 import io.github.minhhoangvn.utils.AdaptiveCardsFormat;
 import io.github.minhhoangvn.utils.Constants;
+import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
-import org.apache.commons.validator.routines.UrlValidator;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.ce.posttask.PostProjectAnalysisTask;
@@ -37,24 +38,28 @@ public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
   public void finished(final Context context) {
     this.analysis = context.getProjectAnalysis();
     if (!isEnablePushResultToMSTeams()) {
+      LOG.info("Notify result to Microsoft Team is disabled");
       return;
     }
     try {
       String webhookUrl = this.getWebhookUrl();
-      LOG.info("Minh Hoang createMessageCardJSONPayload: "
-          + AdaptiveCardsFormat.createMessageCardJSONPayload(analysis,
-          this.getSonarqubeProjectUrl()));
+      String jsonPayload = AdaptiveCardsFormat.createMessageCardJSONPayload(analysis,
+          this.getSonarqubeProjectUrl());
+      try (Response resp = client.sendNotify(webhookUrl, jsonPayload)) {
+        int statusCode = resp.code();
+        LOG.info("Send Sonarqube result to Microsoft Teams {}", statusCode);
+      } catch (IOException e) {
+        return;
+      }
     } catch (InvalidPropertiesFormatException e) {
       return;
     }
   }
 
   private String getSonarqubeProjectUrl() {
-    String sonarqubeHomeUrl = this.analysis.getScannerContext().getProperties()
-        .get(Constants.SONAR_URL);
     String projectKey = this.analysis.getProject().getKey();
     return String.format("%s/dashboard?id=%s",
-        sonarqubeHomeUrl,
+        this.getSonarHostUrl(),
         projectKey);
   }
 
@@ -64,20 +69,8 @@ public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
   }
 
   private String getWebhookUrl() throws InvalidPropertiesFormatException {
-    var runtimeWebhookUrl = this.analysis.getScannerContext().getProperties()
+    return this.analysis.getScannerContext().getProperties()
         .get(Constants.WEBHOOK_URL);
-    var settingWebhookUrl = this.settings.get(Constants.WEBHOOK_URL).orElseGet(() -> "");
-    if (UrlValidator.getInstance().isValid(runtimeWebhookUrl)) {
-      return runtimeWebhookUrl;
-    }
-    if (UrlValidator.getInstance().isValid(settingWebhookUrl)) {
-      return settingWebhookUrl;
-    }
-    LOG.error(
-        "Invalid Microsoft Webhook URL,the value of runtime argument is '{}' or the value in SonarQube setting is '{}'",
-        runtimeWebhookUrl, settingWebhookUrl);
-    throw new InvalidPropertiesFormatException(
-        "Invalid Microsoft Webhook URL,the value of runtime argument is '{}' or the value in SonarQube setting is '{}'");
   }
 
   private boolean isEnablePushResultToMSTeams() {

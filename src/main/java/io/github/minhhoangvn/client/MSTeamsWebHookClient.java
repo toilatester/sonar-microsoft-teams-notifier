@@ -17,10 +17,9 @@ public class MSTeamsWebHookClient {
 
   }
 
-  public Response sendNotify(String webhookUrl, JSONObject payload) throws IOException {
+  public Response sendNotify(String webhookUrl, String payload) throws IOException {
     MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-    String jsonPayload = payload.toString();
-    RequestBody requestBody = RequestBody.create(jsonPayload, mediaType);
+    RequestBody requestBody = RequestBody.create(payload, mediaType);
     Request request = new Request.Builder()
         .url(webhookUrl)
         .post(requestBody)
