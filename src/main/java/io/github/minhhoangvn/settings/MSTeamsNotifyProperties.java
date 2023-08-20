@@ -22,15 +22,27 @@ public class MSTeamsNotifyProperties {
             .defaultValue("false")
             .type(PropertyType.BOOLEAN)
             .category(Constants.CATEGORY)
+            .index(1)
             .build());
 
     properties.add(
         PropertyDefinition.builder(Constants.WEBHOOK_URL)
             .name("Microsoft Teams Webhook URL")
-            .description("Input your Webhook URL for sending SonarQube result")
+            .description("Input your Webhook URL for sending SonarQube quality gate result")
             .defaultValue("")
             .category(Constants.CATEGORY)
             .type(PropertyType.TEXT)
+            .index(2)
+            .build());
+
+    properties.add(
+        PropertyDefinition.builder(Constants.WEBHOOK_MESSAGE_AVATAR)
+            .name("Microsoft Teams Webhook Message Avatar")
+            .description("Input your Webhook Avatar URL")
+            .defaultValue("https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png")
+            .category(Constants.CATEGORY)
+            .type(PropertyType.STRING)
+            .index(3)
             .build());
 
     return properties;

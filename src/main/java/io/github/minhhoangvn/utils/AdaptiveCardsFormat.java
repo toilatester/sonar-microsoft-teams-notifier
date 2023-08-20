@@ -20,7 +20,7 @@ public class AdaptiveCardsFormat {
     messageCard.put("@type", "MessageCard");
     messageCard.put("@context", "http://schema.org/extensions");
     messageCard.put("themeColor", "0072C6");
-    messageCard.put("summary", "SonarQube Analysis Result");
+    messageCard.put("summary", "SonarQube Quality Gate Result");
 
     JSONArray sections = new JSONArray();
     sections.put(createSection(analysis));
@@ -41,7 +41,7 @@ public class AdaptiveCardsFormat {
     section.put("activityTitle", "[" + projectName + "] SonarQube Analysis Result");
     section.put("activitySubtitle", "Status: **" + taskStatus + "**");
     section.put("activityImage",
-        "https://codefresh.io/docs/images/testing/sonarqube/sonarqube-logo.png");
+        analysis.getScannerContext().getProperties().get(Constants.WEBHOOK_MESSAGE_AVATAR));
     section.put("facts", createFacts(analysis));
     section.put("markdown", "true");
     return section;
@@ -72,6 +72,7 @@ public class AdaptiveCardsFormat {
               conditionStatusValue,
               conditionOperator,
               conditionErrorThreshold));
+      qualityGateConditionFact.put("style", getQualityGateStyle(conditionStatus));
       facts.put(qualityGateConditionFact);
     });
 

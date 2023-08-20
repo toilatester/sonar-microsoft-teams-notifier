@@ -4,33 +4,30 @@ import io.github.minhhoangvn.client.MSTeamsWebHookClient;
 import io.github.minhhoangvn.utils.AdaptiveCardsFormat;
 import io.github.minhhoangvn.utils.Constants;
 import java.io.IOException;
-import java.util.InvalidPropertiesFormatException;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.postjob.PostJob;
+import org.sonar.api.batch.postjob.PostJobContext;
+import org.sonar.api.batch.postjob.PostJobDescriptor;
 import org.sonar.api.ce.posttask.PostProjectAnalysisTask;
-import org.sonar.api.config.Configuration;
 
-public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
+public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask, PostJob {
 
   /**
    * Logger.
    */
   private static final Logger LOG = LoggerFactory.getLogger(MSTeamsPostProjectAnalysisTask.class);
-  /**
-   * SonarQube settings.
-   */
-  private final Configuration settings;
   private final MSTeamsWebHookClient client;
   private ProjectAnalysis analysis;
 
+  private boolean sendResultToMSTeamFailed = false;
+
   /**
    * Constructor.
-   *
-   * @param settings The SonarQube Configuration settings.
    */
-  public MSTeamsPostProjectAnalysisTask(Configuration settings) {
-    this.settings = settings;
+  public MSTeamsPostProjectAnalysisTask() {
     this.client = new MSTeamsWebHookClient();
   }
 
@@ -41,19 +38,22 @@ public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
       LOG.info("Notify result to Microsoft Team is disabled");
       return;
     }
-    try {
-      String webhookUrl = this.getWebhookUrl();
-      String jsonPayload = AdaptiveCardsFormat.createMessageCardJSONPayload(analysis,
-          this.getSonarqubeProjectUrl());
-      try (Response resp = client.sendNotify(webhookUrl, jsonPayload)) {
-        int statusCode = resp.code();
-        LOG.info("Send Sonarqube result to Microsoft Teams {}", statusCode);
-      } catch (IOException e) {
-        return;
+    String webhookUrl = this.getWebhookUrl();
+    String jsonPayload = AdaptiveCardsFormat.createMessageCardJSONPayload(analysis,
+        this.getSonarqubeProjectUrl());
+    LOG.info("Send Sonarqube result to Microsoft Teams payload: {}", jsonPayload);
+    try (Response resp = client.sendNotify(webhookUrl, jsonPayload)) {
+      int statusCode = resp.code();
+      LOG.info("Send Sonarqube result to Microsoft Teams {}", statusCode);
+      if (isHttpStatusInvalid(statusCode)) {
+        sendResultToMSTeamFailed = true;
       }
-    } catch (InvalidPropertiesFormatException e) {
+    } catch (IOException e) {
+      LOG.error("Error in sending Sonarqube result to Microsoft Team");
+      sendResultToMSTeamFailed = true;
       return;
     }
+
   }
 
   private String getSonarqubeProjectUrl() {
@@ -68,13 +68,29 @@ public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
         .get(Constants.SONAR_URL);
   }
 
-  private String getWebhookUrl() throws InvalidPropertiesFormatException {
+  private String getWebhookUrl() {
     return this.analysis.getScannerContext().getProperties()
         .get(Constants.WEBHOOK_URL);
   }
 
   private boolean isEnablePushResultToMSTeams() {
-    return this.settings.getBoolean(Constants.ENABLE_NOTIFY)
-        .orElseGet(() -> false);
+    return Boolean.parseBoolean(this.analysis.getScannerContext().getProperties()
+        .get(Constants.ENABLE_NOTIFY));
+  }
+
+  @Override
+  public void describe(PostJobDescriptor descriptor) {
+    descriptor.name(this.toString());
+  }
+
+  @Override
+  public void execute(@NotNull PostJobContext context) {
+    if (sendResultToMSTeamFailed) {
+      LOG.error("Error in sending Sonarqube result to Microsoft Team");
+    }
+  }
+
+  private boolean isHttpStatusInvalid(int statusCode) {
+    return statusCode < 200 || statusCode > 202;
   }
 }

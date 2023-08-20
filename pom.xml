@@ -9,9 +9,8 @@
     <packaging>sonar-plugin</packaging>
     <version>1.0</version>
 
-    <name>Plugin for notifying result to Microsoft Teams with SonarQube 10.x</name>
-    <description>Plugin for notifying SonarQube result to Microsoft Teams
-    </description>
+    <name>sonar-microsoft-teams-notifier</name>
+    <description>Plugin for notifying SonarQube result to Microsoft Teams</description>
 
 
     <properties>
@@ -97,6 +96,16 @@
                     <pluginKey>msteamsnotifier</pluginKey>
                     <pluginName>sonar-microsoft-teams-notifier</pluginName>
                     <pluginClass>io.github.minhhoangvn.MSTeamsNotifyPlugin</pluginClass>
+                    <pluginDescription>Plugin for notifying SonarQube result to Microsoft Teams
+                    </pluginDescription>
+                    <pluginDisplayVersion>1.0</pluginDisplayVersion>
+                    <pluginOrganizationName>toilatester</pluginOrganizationName>
+                    <pluginOrganizationUrl>https://github.com/toilatester</pluginOrganizationUrl>
+                    <pluginSourcesUrl>
+                        https://github.com/toilatester/sonar-microsoft-teams-notifier
+                    </pluginSourcesUrl>
+                    <pluginUrl>https://github.com/toilatester/sonar-microsoft-teams-notifier
+                    </pluginUrl>
                     <sonarQubeMinVersion>9.5</sonarQubeMinVersion>
                 </configuration>
             </plugin>

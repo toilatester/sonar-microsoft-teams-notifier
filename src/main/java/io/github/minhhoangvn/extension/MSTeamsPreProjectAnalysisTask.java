@@ -1,7 +1,9 @@
 package io.github.minhhoangvn.extension;
 
 import io.github.minhhoangvn.utils.Constants;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Phase;
@@ -32,8 +34,8 @@ public class MSTeamsPreProjectAnalysisTask implements Sensor {
   }
 
   @Override
-  public void execute(SensorContext sensorContext) {
-    if (!isEnablePushResultToMSTeams()) {
+  public void execute(@NotNull SensorContext sensorContext) {
+    if (!isEnablePushResultToMSTeams(sensorContext)) {
       LOG.info("Notify result to Microsoft Team is disabled");
       return;
     }
@@ -41,6 +43,10 @@ public class MSTeamsPreProjectAnalysisTask implements Sensor {
         this.getSonarBaseUrl(sensorContext));
     sensorContext.addContextProperty(Constants.WEBHOOK_URL,
         this.getWebhookUrl(sensorContext));
+    sensorContext.addContextProperty(Constants.ENABLE_NOTIFY,
+        Boolean.toString(this.isEnablePushResultToMSTeams(sensorContext)));
+    sensorContext.addContextProperty(Constants.WEBHOOK_MESSAGE_AVATAR,
+        this.getWebhookAvatar(sensorContext));
   }
 
   private String getSonarBaseUrl(SensorContext sensorContext) {
@@ -78,7 +84,18 @@ public class MSTeamsPreProjectAnalysisTask implements Sensor {
         "Invalid Microsoft Webhook URL,the value of runtime argument is '{}' or the value in SonarQube setting is '{}'");
   }
 
-  private boolean isEnablePushResultToMSTeams() {
+  private String getWebhookAvatar(SensorContext sensorContext) {
+    String webhookAvatar = this.settings.get(Constants.WEBHOOK_MESSAGE_AVATAR).orElseGet(() -> "");
+    return StringUtils.isBlank(webhookAvatar) ? Constants.DEFAULT_WEBHOOK_MESSAGE_AVATAR
+        : webhookAvatar;
+  }
+
+  private boolean isEnablePushResultToMSTeams(SensorContext sensorContext) {
+    var isEnablePushResultToMSTeamsRuntime = Boolean.parseBoolean(
+        sensorContext.config().get(Constants.ENABLE_NOTIFY).orElseGet(() -> "false"));
+    if (isEnablePushResultToMSTeamsRuntime) {
+      return true;
+    }
     return this.settings.getBoolean(Constants.ENABLE_NOTIFY)
         .orElseGet(() -> false);
   }
