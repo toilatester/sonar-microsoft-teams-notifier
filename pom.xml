@@ -153,5 +153,11 @@
             </plugin>
         </plugins>
     </build>
-
+    <distributionManagement>
+        <repository>
+            <id>github</id> <!-- Value of the server-id in settings.xml -->
+            <url>https://maven.pkg.github.com/minhhoangvn/sonar-microsoft-teams-notifier
+            </url> <!-- Replace your-username with your GitHub username -->
+        </repository>
+    </distributionManagement>
 </project>
