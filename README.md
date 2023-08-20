@@ -16,6 +16,23 @@ To set up the Sonar Microsoft Teams Notifier plugin, follow these steps:
 
 3. **Restart SonarQube**: Restart your SonarQube server to load the newly added plugin.
 
+## Building the Plugin (Optional)
+
+If you want to build the plugin from source and test your changes locally, follow these steps:
+
+1. **Clone the Repository**: Clone the repository to your local machine.
+
+2. **Build the Plugin**: Navigate to the root directory of the cloned repository and build the plugin using the provided build tool (e.g., Maven). Run the appropriate command:
+
+   ```sh
+   # For Maven
+   mvn clean package
+   ```
+
+3. **Copy JAR to Extensions Directory**: After building the plugin, locate the JAR file in the `target` directory (created during the build process). Copy the JAR file to the `extensions/plugins` directory of your SonarQube installation.
+
+4. **Restart SonarQube**: Restart your SonarQube server to load the newly built plugin.
+
 ## Configuration
 
 You can configure the plugin either through the SonarQube configuration UI or using the Sonar Scanner command-line tool.
