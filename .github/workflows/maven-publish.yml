@@ -41,6 +41,7 @@ jobs:
           release_name: Release v${{ github.run_number }}
           draft: false
           prerelease: false
+          body_path: README.md
 
       - name: Upload Artifact
         uses: actions/upload-release-asset@v1
