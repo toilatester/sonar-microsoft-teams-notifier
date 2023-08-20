@@ -9,12 +9,12 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 
 @Phase(name = Name.DEFAULT)
-public class TeamsPreProjectAnalysisTask implements Sensor {
+public class MSTeamsPreProjectAnalysisTask implements Sensor {
 
   /**
    * Logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(TeamsPreProjectAnalysisTask.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MSTeamsPreProjectAnalysisTask.class);
 
   @Override
   public void describe(SensorDescriptor sensorDescriptor) {
@@ -27,7 +27,7 @@ public class TeamsPreProjectAnalysisTask implements Sensor {
         sensorContext.config().get("sonar.host.url").get());
     sensorContext.addContextProperty("sonar.microsoft.team.notify.webhook.url",
         sensorContext.config().get("sonar.microsoft.team.notify.webhook.url").get());
-    sensorContext.addContextProperty("sonar.microsoft.team.notify.webhook.title",
-        sensorContext.config().get("sonar.microsoft.team.notify.webhook.title").get());
+    sensorContext.addContextProperty("sonar.microsoft.team.notify.webhook.enable",
+        sensorContext.config().get("sonar.microsoft.team.notify.webhook.enable").get());
   }
 }

@@ -26,6 +26,7 @@
         <json.version>20230618</json.version>
         <testng.version>7.8.0</testng.version>
         <wiremock.version>3.0.0-beta-10</wiremock.version>
+        <commons.validator.version>1.7</commons.validator.version>
     </properties>
 
     <dependencies>
@@ -50,6 +51,17 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commons.validator.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- unit tests -->
@@ -85,7 +97,7 @@
                 <configuration>
                     <pluginKey>msteamsnotifier</pluginKey>
                     <pluginName>sonar-microsoft-teams-notifier</pluginName>
-                    <pluginClass>io.github.minhhoangvn.MicrosoftTeamsNotifyPlugin</pluginClass>
+                    <pluginClass>io.github.minhhoangvn.MSTeamsNotifyPlugin</pluginClass>
                     <sonarQubeMinVersion>9.5</sonarQubeMinVersion>
                 </configuration>
             </plugin>
@@ -107,40 +119,6 @@
                         <goals>
                             <goal>resources</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.9.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <id>install node and yarn</id>
-                        <goals>
-                            <goal>install-node-and-yarn</goal>
-                        </goals>
-                        <configuration>
-                            <nodeVersion>v16.14.0</nodeVersion>
-                            <yarnVersion>v1.22.5</yarnVersion>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>yarn install</id>
-                        <goals>
-                            <goal>yarn</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <id>yarn run script</id>
-                        <goals>
-                            <goal>yarn</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run build</arguments>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
