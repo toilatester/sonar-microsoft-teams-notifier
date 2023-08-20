@@ -36,7 +36,7 @@ You can configure the plugin either through the SonarQube configuration UI or us
 
 5. Save the configuration.
 
-[![Admin Screenshot](docs/sonar-teams-admin.png)](docs/sonar-teams-admin.png)
+[![Admin Screenshot](docs/sonar-microsoft-teams-notifier.png)](docs/sonar-microsoft-teams-notifier.png)
 
 ### Using sonar-scanner command or sonar-project.properties
 
