@@ -43,6 +43,9 @@
         <testng.version>7.8.0</testng.version>
         <wiremock.version>3.0.0-beta-10</wiremock.version>
         <commons.validator.version>1.7</commons.validator.version>
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <native2ascii.maven.plugin.version>2.0.1</native2ascii.maven.plugin.version>
+        <sonar.packaging.maven.plugin.version>1.21.0.505</sonar.packaging.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -108,7 +111,7 @@
             <plugin>
                 <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
                 <artifactId>sonar-packaging-maven-plugin</artifactId>
-                <version>1.21.0.505</version>
+                <version>${sonar.packaging.maven.plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <pluginKey>msteamsnotifier</pluginKey>
@@ -130,7 +133,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <release>11</release>
                 </configuration>
@@ -139,7 +142,7 @@
                 <!-- UTF-8 bundles are not supported by Java, so they must be converted during build -->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>native2ascii-maven-plugin</artifactId>
-                <version>2.0.1</version>
+                <version>${native2ascii.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>

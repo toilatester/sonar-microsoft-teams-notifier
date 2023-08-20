@@ -17,7 +17,7 @@ public class MSTeamsNotifyProperties {
     List<PropertyDefinition> properties = new ArrayList<>();
     properties.add(
         PropertyDefinition.builder(Constants.ENABLE_NOTIFY)
-            .name("Microsoft Teams Webhook URL")
+            .name("Enable Plugin")
             .description("Enable push Sonarqube result to Microsoft Teams")
             .defaultValue("false")
             .type(PropertyType.BOOLEAN)
@@ -27,7 +27,7 @@ public class MSTeamsNotifyProperties {
 
     properties.add(
         PropertyDefinition.builder(Constants.WEBHOOK_URL)
-            .name("Microsoft Teams Webhook URL")
+            .name("Webhook URL")
             .description("Input your Webhook URL for sending SonarQube quality gate result")
             .defaultValue("")
             .category(Constants.CATEGORY)
@@ -37,7 +37,7 @@ public class MSTeamsNotifyProperties {
 
     properties.add(
         PropertyDefinition.builder(Constants.WEBHOOK_MESSAGE_AVATAR)
-            .name("Microsoft Teams Webhook Message Avatar")
+            .name("Webhook Message Avatar")
             .description("Input your Webhook Avatar URL")
             .defaultValue("https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png")
             .category(Constants.CATEGORY)
