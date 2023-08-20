@@ -15,7 +15,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <name>sonar-microsoft-teams-notifier</name>
+    <name>Sonarqube Microsoft Teams Notify</name>
     <description>Plugin for notifying SonarQube result to Microsoft Teams</description>
     <developers>
         <developer>
@@ -115,7 +115,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <pluginKey>msteamsnotifier</pluginKey>
-                    <pluginName>sonar-microsoft-teams-notifier</pluginName>
+                    <pluginName>Sonarqube Microsoft Teams Notify</pluginName>
                     <pluginClass>io.github.minhhoangvn.MSTeamsNotifyPlugin</pluginClass>
                     <pluginDescription>Plugin for notifying SonarQube result to Microsoft Teams
                     </pluginDescription>
