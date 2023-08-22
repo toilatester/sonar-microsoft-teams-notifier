@@ -59,20 +59,14 @@ public class AdaptiveCardsFormat {
                 .forEach(
                         condition -> {
                             JSONObject qualityGateConditionFact = new JSONObject();
-                            String conditionName = convertSnakeToTitle(condition.getMetricKey());
+                            String conditionName =
+                                    StringUtils.convertSnakeToTitle(condition.getMetricKey());
                             String conditionStatus = condition.getStatus().name();
-                            String conditionStatusValue =
-                                    condition.getStatus().name().equals("NO_VALUE")
-                                            ? "0"
-                                            : condition.getValue();
+                            String conditionStatusValue = getConditionStatusValue(condition);
                             String conditionErrorThreshold =
-                                    conditionName.contains("Rating")
-                                            ? RatingMapper.getRating(condition.getErrorThreshold())
-                                            : condition.getErrorThreshold();
+                                    getConditionErrorThreshold(conditionName, condition);
                             String currentConditionValue =
-                                    conditionName.contains("Rating")
-                                            ? RatingMapper.getRating(conditionStatusValue)
-                                            : conditionStatusValue;
+                                    getCurrentConditionValue(conditionName, conditionStatusValue);
                             qualityGateConditionFact.put("name", conditionName);
                             qualityGateConditionFact.put(
                                     "value",
@@ -121,24 +115,20 @@ public class AdaptiveCardsFormat {
         return uriTarget;
     }
 
-    private static String convertSnakeToTitle(String snakeCase) {
-        StringBuilder titleCase = new StringBuilder();
-        boolean capitalizeNext = true;
+    private static String getConditionStatusValue(Condition condition) {
+        return condition.getStatus().name().equals("NO_VALUE") ? "0" : condition.getValue();
+    }
 
-        for (char c : snakeCase.toCharArray()) {
-            if (c == '_') {
-                titleCase.append(' ');
-                capitalizeNext = true;
-            } else {
-                if (capitalizeNext) {
-                    titleCase.append(Character.toUpperCase(c));
-                    capitalizeNext = false;
-                } else {
-                    titleCase.append(c);
-                }
-            }
-        }
+    private static String getConditionErrorThreshold(String conditionName, Condition condition) {
+        return conditionName.contains("Rating")
+                ? RatingMapper.getRating(condition.getErrorThreshold())
+                : condition.getErrorThreshold();
+    }
 
-        return titleCase.toString();
+    private static String getCurrentConditionValue(
+            String conditionName, String conditionStatusValue) {
+        return conditionName.contains("Rating")
+                ? RatingMapper.getRating(conditionStatusValue)
+                : conditionStatusValue;
     }
 }
