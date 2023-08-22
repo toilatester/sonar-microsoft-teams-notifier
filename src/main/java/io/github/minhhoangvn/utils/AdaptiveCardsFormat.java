@@ -59,18 +59,17 @@ public class AdaptiveCardsFormat {
       String conditionName = convertSnakeToTitle(condition.getMetricKey());
       String conditionStatus = condition.getStatus().name();
       String conditionStatusValue =
-          condition.getStatus().name().equals("NO_VALUE") ? "N/A" : condition.getValue();
+          condition.getStatus().name().equals("NO_VALUE") ? "0" : condition.getValue();
       String conditionOperator = condition.getOperator().name();
       String conditionErrorThreshold =
-          conditionName.contains("Rating") ? convertErrorThresholdNumberToString(
+          conditionName.contains("Rating") ? RatingMapper.getRating(
               condition.getErrorThreshold()) : condition.getErrorThreshold();
+
       qualityGateConditionFact.put("name", conditionName);
       qualityGateConditionFact.put("value",
-          String.format("%s - %s: Current value is %s %s threshold value %s",
-              conditionName,
+          String.format("Status %s\nCurrent value is %s\nThreshold value %s",
               conditionStatus,
-              conditionStatusValue,
-              conditionOperator,
+              RatingMapper.getRating(conditionStatusValue),
               conditionErrorThreshold));
       qualityGateConditionFact.put("style", getQualityGateStyle(conditionStatus));
       facts.put(qualityGateConditionFact);
@@ -129,17 +128,5 @@ public class AdaptiveCardsFormat {
     }
 
     return titleCase.toString();
-  }
-
-  private static String convertErrorThresholdNumberToString(String errorThreshold) {
-    Map<String, String> rattingMapping = new HashMap<>();
-    rattingMapping.put("1", "A");
-    rattingMapping.put("2", "B");
-    rattingMapping.put("3", "C");
-    rattingMapping.put("4", "D");
-    if (rattingMapping.containsKey(errorThreshold)) {
-      return rattingMapping.get(errorThreshold);
-    }
-    return "N/A";
   }
 }

@@ -45,8 +45,15 @@ public class MSTeamsNotifyProperties {
             .index(3)
             .build());
 
+    properties.add(
+        PropertyDefinition.builder(Constants.WEBHOOK_SEND_ON_FAIL)
+          .name("Webhook Send on Fail")
+          .description("Only send webhook when analysis fail")
+          .type(PropertyType.BOOLEAN)
+          .category(Constants.CATEGORY)
+          .defaultValue("true")
+          .index(4)
+          .build());
     return properties;
   }
-
-
 }
