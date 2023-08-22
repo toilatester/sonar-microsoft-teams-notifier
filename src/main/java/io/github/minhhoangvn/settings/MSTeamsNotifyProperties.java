@@ -49,7 +49,7 @@ public class MSTeamsNotifyProperties {
                         .build());
 
         properties.add(
-                PropertyDefinition.builder(Constants.WEBHOOK_SEND_ON_FAIL)
+                PropertyDefinition.builder(Constants.WEBHOOK_SEND_ON_FAILED)
                         .name("Webhook Send On Failed")
                         .description("Only send webhook when analysis failed")
                         .type(PropertyType.BOOLEAN)

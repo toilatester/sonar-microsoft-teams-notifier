@@ -38,7 +38,10 @@ public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
                         analysis, this.getSonarqubeProjectUrl());
 
         // Return if analysis status is SUCCESS
-        if (jsonPayload.contains(Constants.ANALYSIS_STATUS_SUCCESS)) {
+        boolean skipSendNotifyForStatusPassed =
+                jsonPayload.contains(Constants.ANALYSIS_STATUS_SUCCESS)
+                        && this.isEnablePushResultToMSTeamsWhenScanFailed();
+        if (skipSendNotifyForStatusPassed) {
             LOG.info("Analysis PASSED. Skip sending notification to Teams.");
             return;
         }
@@ -71,6 +74,14 @@ public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
     private boolean isEnablePushResultToMSTeams() {
         return Boolean.parseBoolean(
                 this.analysis.getScannerContext().getProperties().get(Constants.ENABLE_NOTIFY));
+    }
+
+    private boolean isEnablePushResultToMSTeamsWhenScanFailed() {
+        return Boolean.parseBoolean(
+                this.analysis
+                        .getScannerContext()
+                        .getProperties()
+                        .get(Constants.WEBHOOK_SEND_ON_FAILED));
     }
 
     private boolean isHttpStatusInvalid(int statusCode) {

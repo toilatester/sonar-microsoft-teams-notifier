@@ -51,10 +51,10 @@ You can configure the plugin either through the SonarQube configuration UI or us
 
 4. Configure the following options:
 
-   - **Enable Plugin**: Set the value of `sonar.microsoft.team.notify.enable` to `true` to enable the plugin.
-   - **Webhook URL**: Set the value of `sonar.microsoft.team.notify.webhook.url` to the Microsoft Teams webhook URL where you want to receive notifications.
-   - **Webhook Message Avatar**: Set the value of `sonar.microsoft.team.notify.webhook.avatar` to the URL of the avatar image you want to use for the notifications.
-   - **Webhook Send On Failed**: Set the value of `sonar.webhook.fail.only.enable` to enable send notify when analysis failed
+   - **Enable Plugin**: Set the value of `sonar.notify.microsoft.team.enable` to `true` to enable the plugin.
+   - **Webhook URL**: Set the value of `sonar.notify.microsoft.team.webhook.url` to the Microsoft Teams webhook URL where you want to receive notifications.
+   - **Webhook Message Avatar**: Set the value of `sonar.notify.microsoft.team.webhook.avatar` to the URL of the avatar image you want to use for the notifications.
+   - **Webhook Send On Failed**: Set the value of `sonar.notify.webhook.fail.only.enable` to enable send notify when analysis failed
 5. Save the configuration.
 
 [![Admin Screenshot](docs/sonar-microsoft-teams-notifier.png)](docs/sonar-microsoft-teams-notifier.png)
@@ -65,15 +65,15 @@ When running the Sonar Scanner command, you can provide the configuration option
 
 **Example command:**
 ```sh
-mvn clean verify sonar:sonar -Dsonar.microsoft.team.notify.enable=true -Dsonar.webhook.fail.only.enable=true -Dsonar.microsoft.team.notify.webhook.url=<your-webhook-url> -Dsonar.microsoft.team.notify.webhook.avatar=<avatar-url>
+mvn clean verify sonar:sonar -Dsonar.notify.microsoft.team.enable=true -Dsonar.notify.webhook.fail.only.enable=true -Dsonar.notify.microsoft.team.webhook.url=<your-webhook-url> -Dsonar.notify.microsoft.team.webhook.avatar=<avatar-url>
 ```
 
 **Example sonar-project.properties**
 ```properties
-sonar.microsoft.team.notify.enable=true
-sonar.microsoft.team.notify.webhook.url=<your-webhook-url>
-sonar.microsoft.team.notify.webhook.avatar=<avatar-url>
-sonar.webhook.fail.only.enable=true
+sonar.notify.microsoft.team.enable=true
+sonar.notify.microsoft.team.webhook.url=<your-webhook-url>
+sonar.notify.microsoft.team.webhook.avatar=<avatar-url>
+sonar.notify.webhook.fail.only.enable=true
 ```
 Replace `<your-webhook-url>` with your actual Microsoft Teams webhook URL and `<avatar-url>` with the URL of the avatar image.
 

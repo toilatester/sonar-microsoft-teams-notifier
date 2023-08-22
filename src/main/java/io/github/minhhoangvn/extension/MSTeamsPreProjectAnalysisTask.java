@@ -45,6 +45,9 @@ public class MSTeamsPreProjectAnalysisTask implements Sensor {
                 Constants.ENABLE_NOTIFY,
                 Boolean.toString(this.isEnablePushResultToMSTeams(sensorContext)));
         sensorContext.addContextProperty(
+                Constants.WEBHOOK_SEND_ON_FAILED,
+                Boolean.toString(this.isEnablePushResultToMSTeamsWhenScanFailed(sensorContext)));
+        sensorContext.addContextProperty(
                 Constants.WEBHOOK_MESSAGE_AVATAR, this.getWebhookAvatar(sensorContext));
     }
 
@@ -108,5 +111,18 @@ public class MSTeamsPreProjectAnalysisTask implements Sensor {
             return true;
         }
         return this.settings.getBoolean(Constants.ENABLE_NOTIFY).orElseGet(() -> false);
+    }
+
+    private boolean isEnablePushResultToMSTeamsWhenScanFailed(SensorContext sensorContext) {
+        var isEnablePushResultToMSTeamsRuntime =
+                Boolean.parseBoolean(
+                        sensorContext
+                                .config()
+                                .get(Constants.WEBHOOK_SEND_ON_FAILED)
+                                .orElseGet(() -> "false"));
+        if (isEnablePushResultToMSTeamsRuntime) {
+            return true;
+        }
+        return this.settings.getBoolean(Constants.WEBHOOK_SEND_ON_FAILED).orElseGet(() -> false);
     }
 }
