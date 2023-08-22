@@ -114,7 +114,7 @@ public class AdaptiveCardsFormatTest {
     @Test
     public void testCreateMessageCardJSONPayloadWithInvalidArgument() {
         assertThrows(
-                IllegalArgumentException.class,
+                NullPointerException.class,
                 () ->
                         AdaptiveCardsFormat.createMessageCardJSONPayload(
                                 null, "https://example.org/example"));

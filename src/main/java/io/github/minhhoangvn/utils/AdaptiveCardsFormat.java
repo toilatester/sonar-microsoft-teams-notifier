@@ -1,6 +1,7 @@
 package io.github.minhhoangvn.utils;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.sonar.api.ce.posttask.PostProjectAnalysisTask.ProjectAnalysis;
@@ -12,7 +13,7 @@ import java.util.Objects;
 public class AdaptiveCardsFormat {
 
     public static String createMessageCardJSONPayload(
-            @NotNull ProjectAnalysis analysis, String projectUrl) {
+            @NonNull ProjectAnalysis analysis, String projectUrl) {
         return createMessageCard(analysis, projectUrl).toString();
     }
 

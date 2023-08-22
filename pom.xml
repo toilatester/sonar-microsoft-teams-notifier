@@ -46,6 +46,7 @@
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <native2ascii.maven.plugin.version>2.0.1</native2ascii.maven.plugin.version>
         <sonar.packaging.maven.plugin.version>1.21.0.505</sonar.packaging.maven.plugin.version>
+        <org.projectlombok.version>1.18.28</org.projectlombok.version>
     </properties>
 
     <dependencies>
@@ -82,7 +83,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${org.projectlombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- unit tests -->
         <dependency>
             <groupId>org.sonarsource.sonarqube</groupId>
