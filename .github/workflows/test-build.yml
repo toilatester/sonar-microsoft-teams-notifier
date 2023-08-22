@@ -7,6 +7,10 @@ jobs:
     if: ${{ github.actor != 'dependabot[bot]' }}
     name: Analyze
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+      deployments: write
     strategy:
       fail-fast: false
       matrix:
@@ -24,6 +28,10 @@ jobs:
       uses: github/codeql-action/analyze@v2
   pre-commit:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+      deployments: write
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v3
