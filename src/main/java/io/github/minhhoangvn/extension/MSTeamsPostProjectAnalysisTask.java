@@ -35,6 +35,13 @@ public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
     String webhookUrl = this.getWebhookUrl();
     String jsonPayload = AdaptiveCardsFormat.createMessageCardJSONPayload(analysis,
         this.getSonarqubeProjectUrl());
+      
+    // Return if analysis status is SUCCESS
+    if (jsonPayload.contains(Constants.ANALYSIS_STATUS_SUCCESS)) {
+      LOG.info("Analysis PASSED. Skip sending notification to Teams.");
+      return;
+    }
+
     LOG.info("Send Sonarqube result to Microsoft Teams payload: {}", jsonPayload);
     try (Response resp = client.sendNotify(webhookUrl, jsonPayload)) {
       int statusCode = resp.code();
