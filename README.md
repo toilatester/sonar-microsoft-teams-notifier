@@ -94,3 +94,5 @@ This plugin is distributed under the [Apache License 2.0](LICENSE).
 ---
 
 **Disclaimer**: This plugin is not officially endorsed or supported by SonarQube or Microsoft. Use it at your own discretion.
+
+
