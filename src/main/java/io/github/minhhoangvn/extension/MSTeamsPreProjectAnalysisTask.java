@@ -1,6 +1,7 @@
 package io.github.minhhoangvn.extension;
 
 import io.github.minhhoangvn.utils.Constants;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jetbrains.annotations.NotNull;
@@ -16,87 +17,96 @@ import org.sonar.api.config.Configuration;
 @Phase(name = Name.DEFAULT)
 public class MSTeamsPreProjectAnalysisTask implements Sensor {
 
-  private final UrlValidator urlValidator;
-  private final Configuration settings;
-  /**
-   * Logger.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(MSTeamsPreProjectAnalysisTask.class);
+    private final UrlValidator urlValidator;
+    private final Configuration settings;
 
-  public MSTeamsPreProjectAnalysisTask(Configuration settings) {
-    this.settings = settings;
-    this.urlValidator = new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS);
-  }
+    /** Logger. */
+    private static final Logger LOG = LoggerFactory.getLogger(MSTeamsPreProjectAnalysisTask.class);
 
-  @Override
-  public void describe(SensorDescriptor sensorDescriptor) {
-    sensorDescriptor.name(getClass().getName());
-  }
-
-  @Override
-  public void execute(@NotNull SensorContext sensorContext) {
-    if (!isEnablePushResultToMSTeams(sensorContext)) {
-      LOG.info("Notify result to Microsoft Team is disabled");
-      return;
+    public MSTeamsPreProjectAnalysisTask(Configuration settings) {
+        this.settings = settings;
+        this.urlValidator = new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS);
     }
-    sensorContext.addContextProperty(Constants.SONAR_URL,
-        this.getSonarBaseUrl(sensorContext));
-    sensorContext.addContextProperty(Constants.WEBHOOK_URL,
-        this.getWebhookUrl(sensorContext));
-    sensorContext.addContextProperty(Constants.ENABLE_NOTIFY,
-        Boolean.toString(this.isEnablePushResultToMSTeams(sensorContext)));
-    sensorContext.addContextProperty(Constants.WEBHOOK_MESSAGE_AVATAR,
-        this.getWebhookAvatar(sensorContext));
-  }
 
-  private String getSonarBaseUrl(SensorContext sensorContext) {
-    String settingSonarBaseUrl = this.settings.get("sonar.core.serverBaseURL").orElseGet(() -> "");
-    String runtimeSonarBaseUrl = sensorContext.config().get(Constants.SONAR_URL)
-        .orElseGet(() -> "");
-    if (urlValidator.isValid(runtimeSonarBaseUrl)) {
-      return runtimeSonarBaseUrl;
+    @Override
+    public void describe(SensorDescriptor sensorDescriptor) {
+        sensorDescriptor.name(getClass().getName());
     }
-    if (urlValidator.isValid(settingSonarBaseUrl)) {
-      return settingSonarBaseUrl;
-    }
-    LOG.error(
-        "Invalid Sonarqube base URL,the value of runtime argument is '{}' or the value in SonarQube setting is '{}'",
-        runtimeSonarBaseUrl, settingSonarBaseUrl);
-    throw new RuntimeException(
-        "Please provide Sonarqube base url through 'General-> Server base URL' config, "
-            + "or provide through sonar.host.url in mvn command");
-  }
 
-  private String getWebhookUrl(SensorContext sensorContext) {
-    String runtimeWebhookUrl = sensorContext.config().get(Constants.WEBHOOK_URL)
-        .orElseGet(() -> "");
-    String settingWebhookUrl = this.settings.get(Constants.WEBHOOK_URL).orElseGet(() -> "");
-    if (urlValidator.isValid(runtimeWebhookUrl)) {
-      return runtimeWebhookUrl;
+    @Override
+    public void execute(@NotNull SensorContext sensorContext) {
+        if (!isEnablePushResultToMSTeams(sensorContext)) {
+            LOG.info("Notify result to Microsoft Team is disabled");
+            return;
+        }
+        sensorContext.addContextProperty(Constants.SONAR_URL, this.getSonarBaseUrl(sensorContext));
+        sensorContext.addContextProperty(Constants.WEBHOOK_URL, this.getWebhookUrl(sensorContext));
+        sensorContext.addContextProperty(
+                Constants.ENABLE_NOTIFY,
+                Boolean.toString(this.isEnablePushResultToMSTeams(sensorContext)));
+        sensorContext.addContextProperty(
+                Constants.WEBHOOK_MESSAGE_AVATAR, this.getWebhookAvatar(sensorContext));
     }
-    if (urlValidator.isValid(settingWebhookUrl)) {
-      return settingWebhookUrl;
-    }
-    LOG.error(
-        "Invalid Microsoft Webhook URL,the value of runtime argument is '{}' or the value in SonarQube setting is '{}'",
-        runtimeWebhookUrl, settingWebhookUrl);
-    throw new RuntimeException(
-        "Invalid Microsoft Webhook URL,the value of runtime argument is '{}' or the value in SonarQube setting is '{}'");
-  }
 
-  private String getWebhookAvatar(SensorContext sensorContext) {
-    String webhookAvatar = this.settings.get(Constants.WEBHOOK_MESSAGE_AVATAR).orElseGet(() -> "");
-    return StringUtils.isBlank(webhookAvatar) ? Constants.DEFAULT_WEBHOOK_MESSAGE_AVATAR
-        : webhookAvatar;
-  }
-
-  private boolean isEnablePushResultToMSTeams(SensorContext sensorContext) {
-    var isEnablePushResultToMSTeamsRuntime = Boolean.parseBoolean(
-        sensorContext.config().get(Constants.ENABLE_NOTIFY).orElseGet(() -> "false"));
-    if (isEnablePushResultToMSTeamsRuntime) {
-      return true;
+    private String getSonarBaseUrl(SensorContext sensorContext) {
+        String settingSonarBaseUrl =
+                this.settings.get("sonar.core.serverBaseURL").orElseGet(() -> "");
+        String runtimeSonarBaseUrl =
+                sensorContext.config().get(Constants.SONAR_URL).orElseGet(() -> "");
+        if (urlValidator.isValid(runtimeSonarBaseUrl)) {
+            return runtimeSonarBaseUrl;
+        }
+        if (urlValidator.isValid(settingSonarBaseUrl)) {
+            return settingSonarBaseUrl;
+        }
+        LOG.error(
+                "Invalid Sonarqube base URL,the value of runtime argument is '{}' or the value in"
+                        + " SonarQube setting is '{}'",
+                runtimeSonarBaseUrl,
+                settingSonarBaseUrl);
+        throw new RuntimeException(
+                "Please provide Sonarqube base url through 'General-> Server base URL' config, "
+                        + "or provide through sonar.host.url in mvn command");
     }
-    return this.settings.getBoolean(Constants.ENABLE_NOTIFY)
-        .orElseGet(() -> false);
-  }
+
+    private String getWebhookUrl(SensorContext sensorContext) {
+        String runtimeWebhookUrl =
+                sensorContext.config().get(Constants.WEBHOOK_URL).orElseGet(() -> "");
+        String settingWebhookUrl = this.settings.get(Constants.WEBHOOK_URL).orElseGet(() -> "");
+        if (urlValidator.isValid(runtimeWebhookUrl)) {
+            return runtimeWebhookUrl;
+        }
+        if (urlValidator.isValid(settingWebhookUrl)) {
+            return settingWebhookUrl;
+        }
+        LOG.error(
+                "Invalid Microsoft Webhook URL,the value of runtime argument is '{}' or the value"
+                        + " in SonarQube setting is '{}'",
+                runtimeWebhookUrl,
+                settingWebhookUrl);
+        throw new RuntimeException(
+                "Invalid Microsoft Webhook URL,the value of runtime argument is '{}' or the value"
+                        + " in SonarQube setting is '{}'");
+    }
+
+    private String getWebhookAvatar(SensorContext sensorContext) {
+        String webhookAvatar =
+                this.settings.get(Constants.WEBHOOK_MESSAGE_AVATAR).orElseGet(() -> "");
+        return StringUtils.isBlank(webhookAvatar)
+                ? Constants.DEFAULT_WEBHOOK_MESSAGE_AVATAR
+                : webhookAvatar;
+    }
+
+    private boolean isEnablePushResultToMSTeams(SensorContext sensorContext) {
+        var isEnablePushResultToMSTeamsRuntime =
+                Boolean.parseBoolean(
+                        sensorContext
+                                .config()
+                                .get(Constants.ENABLE_NOTIFY)
+                                .orElseGet(() -> "false"));
+        if (isEnablePushResultToMSTeamsRuntime) {
+            return true;
+        }
+        return this.settings.getBoolean(Constants.ENABLE_NOTIFY).orElseGet(() -> false);
+    }
 }
