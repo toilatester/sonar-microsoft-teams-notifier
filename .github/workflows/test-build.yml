@@ -28,8 +28,7 @@ jobs:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        directory: ./target/site/jacoco/
-        files: ./jacoco.xml
+        files: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
         flags: unittests
   pre-commit:
     runs-on: ubuntu-latest
