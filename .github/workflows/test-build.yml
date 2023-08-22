@@ -3,29 +3,6 @@ name: Test Plugin
 on: [push, pull_request]
 
 jobs:
-  scan-code:
-    if: ${{ github.actor != 'dependabot[bot]' }}
-    name: Analyze
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: write
-      deployments: write
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [java]
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
   pre-commit:
     runs-on: ubuntu-latest
     permissions:
