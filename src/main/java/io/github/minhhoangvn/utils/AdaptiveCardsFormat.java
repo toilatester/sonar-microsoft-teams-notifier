@@ -1,5 +1,6 @@
 package io.github.minhhoangvn.utils;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.sonar.api.ce.posttask.PostProjectAnalysisTask.ProjectAnalysis;
@@ -10,7 +11,8 @@ import java.util.Objects;
 
 public class AdaptiveCardsFormat {
 
-    public static String createMessageCardJSONPayload(ProjectAnalysis analysis, String projectUrl) {
+    public static String createMessageCardJSONPayload(
+            @NotNull ProjectAnalysis analysis, String projectUrl) {
         return createMessageCard(analysis, projectUrl).toString();
     }
 
@@ -67,14 +69,17 @@ public class AdaptiveCardsFormat {
                                     conditionName.contains("Rating")
                                             ? RatingMapper.getRating(condition.getErrorThreshold())
                                             : condition.getErrorThreshold();
-
+                            String currentConditionValue =
+                                    conditionName.contains("Rating")
+                                            ? RatingMapper.getRating(conditionStatusValue)
+                                            : conditionStatusValue;
                             qualityGateConditionFact.put("name", conditionName);
                             qualityGateConditionFact.put(
                                     "value",
                                     String.format(
                                             "Status %s\nCurrent value is %s\nThreshold value %s",
                                             conditionStatus,
-                                            RatingMapper.getRating(conditionStatusValue),
+                                            currentConditionValue,
                                             conditionErrorThreshold));
                             qualityGateConditionFact.put(
                                     "style", getQualityGateStyle(conditionStatus));
