@@ -1,5 +1,5 @@
 # Sonar Microsoft Teams Notifier
-
+[![codecov](https://codecov.io/gh/toilatester/sonar-microsoft-teams-notifier/graph/badge.svg?token=NRGDQBMAGX)](https://codecov.io/gh/toilatester/sonar-microsoft-teams-notifier)
 The **Sonar Microsoft Teams Notifier** is a SonarQube plugin that seamlessly sends SonarQube analysis results to Microsoft Teams, enhancing code quality insights and promoting better collaboration among development teams. With this plugin, you can receive real-time notifications about your project's code quality directly in your Microsoft Teams channels.
 
 ## Features
