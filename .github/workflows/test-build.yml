@@ -20,8 +20,6 @@ jobs:
         settings-path: ${{ github.workspace }}     # location for the settings.xml file
     - name: Build and test
       run: mvn clean test
-    - name: Check coverage report
-      run: ls -la && ls -la ./target && ls -la ./target/site && ls -la ./target/site/jacoco
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
       env:
