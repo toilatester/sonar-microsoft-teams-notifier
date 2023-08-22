@@ -60,7 +60,6 @@ public class AdaptiveCardsFormat {
       String conditionStatus = condition.getStatus().name();
       String conditionStatusValue =
           condition.getStatus().name().equals("NO_VALUE") ? "0" : condition.getValue();
-      String conditionOperator = condition.getOperator().name();
       String conditionErrorThreshold =
           conditionName.contains("Rating") ? RatingMapper.getRating(
               condition.getErrorThreshold()) : condition.getErrorThreshold();
