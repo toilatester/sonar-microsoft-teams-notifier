@@ -2,7 +2,6 @@ package io.github.minhhoangvn.extension;
 
 import io.github.minhhoangvn.utils.Constants;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -93,11 +92,17 @@ public class MSTeamsPreProjectAnalysisTask implements Sensor {
     }
 
     private String getWebhookAvatar(SensorContext sensorContext) {
+        String runtimeWebhookAvatarUrl =
+                sensorContext.config().get(Constants.WEBHOOK_MESSAGE_AVATAR).orElseGet(() -> "");
         String webhookAvatar =
                 this.settings.get(Constants.WEBHOOK_MESSAGE_AVATAR).orElseGet(() -> "");
-        return StringUtils.isBlank(webhookAvatar)
-                ? Constants.DEFAULT_WEBHOOK_MESSAGE_AVATAR
-                : webhookAvatar;
+        if (urlValidator.isValid(runtimeWebhookAvatarUrl)) {
+            return runtimeWebhookAvatarUrl;
+        }
+        if (urlValidator.isValid(webhookAvatar)) {
+            return webhookAvatar;
+        }
+        return Constants.DEFAULT_WEBHOOK_MESSAGE_AVATAR;
     }
 
     private boolean isEnablePushResultToMSTeams(SensorContext sensorContext) {
