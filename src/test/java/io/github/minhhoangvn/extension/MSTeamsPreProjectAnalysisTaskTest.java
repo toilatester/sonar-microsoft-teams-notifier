@@ -36,15 +36,23 @@ public class MSTeamsPreProjectAnalysisTaskTest {
         var actualContextProperty = new HashMap<>();
         SensorContext mockSensorContext = mock(SensorContext.class);
         Configuration mockConfiguration = mock(Configuration.class);
+        Configuration mockConfigurationRuntime = mock(Configuration.class);
 
-        when(mockSensorContext.config()).thenReturn(mockConfiguration);
-        when(mockConfiguration.get(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of("true"));
+        when(mockSensorContext.config()).thenReturn(mockConfigurationRuntime);
+        when(mockConfiguration.getBoolean(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of(true));
         when(mockConfiguration.get(Constants.WEBHOOK_SEND_ON_FAILED))
                 .thenReturn(Optional.of("false"));
+        when(mockConfiguration.get("sonar.core.serverBaseURL"))
+                .thenReturn(Optional.of("https://dummy.com"));
         when(mockConfiguration.get(Constants.WEBHOOK_URL))
                 .thenReturn(Optional.of("https://dummy.com/hook"));
         when(mockConfiguration.get(Constants.SONAR_URL))
                 .thenReturn(Optional.of("https://dummy.com"));
+        when(mockConfiguration.get(Constants.WEBHOOK_MESSAGE_AVATAR))
+                .thenReturn(Optional.of("https://dummy.com/hook/avatar"));
+
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_MESSAGE_AVATAR))
+                .thenReturn(Optional.of(""));
 
         Mockito.doAnswer(
                         i -> {
@@ -64,7 +72,7 @@ public class MSTeamsPreProjectAnalysisTaskTest {
         verify(mockSensorContext, Mockito.times(5)).addContextProperty(any(), any());
 
         Assert.assertEquals(
-                "https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png",
+                "https://dummy.com/hook/avatar",
                 actualContextProperty.get(Constants.WEBHOOK_MESSAGE_AVATAR));
         Assert.assertEquals("https://dummy.com", actualContextProperty.get(Constants.SONAR_URL));
         Assert.assertEquals(
@@ -78,9 +86,11 @@ public class MSTeamsPreProjectAnalysisTaskTest {
         Configuration mockConfiguration = mock(Configuration.class);
 
         when(mockSensorContext.config()).thenReturn(mockConfiguration);
-        when(mockConfiguration.get(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of("false"));
+        when(mockConfiguration.getBoolean(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of(false));
         when(mockConfiguration.get(Constants.WEBHOOK_SEND_ON_FAILED))
                 .thenReturn(Optional.of("false"));
+        when(mockConfiguration.get("sonar.core.serverBaseURL"))
+                .thenReturn(Optional.of("https://dummy.com"));
         when(mockConfiguration.get(Constants.WEBHOOK_URL))
                 .thenReturn(Optional.of("https://dummy.com/hook"));
         when(mockConfiguration.get(Constants.SONAR_URL))
@@ -101,9 +111,11 @@ public class MSTeamsPreProjectAnalysisTaskTest {
         Configuration mockConfigurationRuntime = mock(Configuration.class);
 
         when(mockSensorContext.config()).thenReturn(mockConfigurationRuntime);
-        when(mockConfiguration.get(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of("true"));
+        when(mockConfiguration.getBoolean(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of(false));
         when(mockConfiguration.get(Constants.WEBHOOK_SEND_ON_FAILED))
                 .thenReturn(Optional.of("false"));
+        when(mockConfiguration.get("sonar.core.serverBaseURL"))
+                .thenReturn(Optional.of("https://dummy.com"));
         when(mockConfiguration.get(Constants.WEBHOOK_URL))
                 .thenReturn(Optional.of("https://dummy.com/hook"));
         when(mockConfiguration.get(Constants.SONAR_URL))
@@ -135,9 +147,11 @@ public class MSTeamsPreProjectAnalysisTaskTest {
         Configuration mockConfigurationRuntime = mock(Configuration.class);
 
         when(mockSensorContext.config()).thenReturn(mockConfigurationRuntime);
-        when(mockConfiguration.get(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of("true"));
+        when(mockConfiguration.getBoolean(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of(true));
         when(mockConfiguration.get(Constants.WEBHOOK_SEND_ON_FAILED))
                 .thenReturn(Optional.of("false"));
+        when(mockConfiguration.get("sonar.core.serverBaseURL"))
+                .thenReturn(Optional.of("https://dummy.com"));
         when(mockConfiguration.get(Constants.WEBHOOK_URL))
                 .thenReturn(Optional.of("https://dummy.com/hook"));
         when(mockConfiguration.get(Constants.SONAR_URL))
@@ -150,6 +164,63 @@ public class MSTeamsPreProjectAnalysisTaskTest {
                 .thenReturn(Optional.of("https://dummy-runtime.com/hook"));
         when(mockConfigurationRuntime.get(Constants.SONAR_URL))
                 .thenReturn(Optional.of("https://dummy-runtime.com"));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_MESSAGE_AVATAR))
+                .thenReturn(Optional.of("https://dummy-runtime.com/hook/avatar"));
+
+        Mockito.doAnswer(
+                        i -> {
+                            String key = i.getArgument(0);
+                            String value = i.getArgument(1);
+                            actualContextProperty.put(key, value);
+                            return null;
+                        })
+                .when(mockSensorContext)
+                .addContextProperty(any(), any());
+
+        MSTeamsPreProjectAnalysisTask preProjectAnalysisTask =
+                new MSTeamsPreProjectAnalysisTask(mockConfiguration);
+
+        preProjectAnalysisTask.execute(mockSensorContext);
+
+        verify(mockSensorContext, Mockito.times(5)).addContextProperty(any(), any());
+
+        Assert.assertEquals(
+                "https://dummy-runtime.com", actualContextProperty.get(Constants.SONAR_URL));
+        Assert.assertEquals(
+                "https://dummy-runtime.com/hook", actualContextProperty.get(Constants.WEBHOOK_URL));
+        Assert.assertEquals(
+                "https://dummy-runtime.com/hook/avatar",
+                actualContextProperty.get(Constants.WEBHOOK_MESSAGE_AVATAR));
+        Assert.assertEquals("true", actualContextProperty.get(Constants.WEBHOOK_SEND_ON_FAILED));
+    }
+
+    @Test
+    public void testSetupAddingContextPropertyWithRuntimeDynamicConfigPluginWithEmptyUrl() {
+        var actualContextProperty = new HashMap<>();
+
+        SensorContext mockSensorContext = mock(SensorContext.class);
+        Configuration mockConfiguration = mock(Configuration.class);
+        Configuration mockConfigurationRuntime = mock(Configuration.class);
+
+        when(mockSensorContext.config()).thenReturn(mockConfigurationRuntime);
+        when(mockConfiguration.getBoolean(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of(true));
+        when(mockConfiguration.get(Constants.WEBHOOK_SEND_ON_FAILED))
+                .thenReturn(Optional.of("false"));
+        when(mockConfiguration.get("sonar.core.serverBaseURL"))
+                .thenReturn(Optional.of("https://dummy.com"));
+        when(mockConfiguration.get(Constants.WEBHOOK_URL))
+                .thenReturn(Optional.of("https://dummy.com/hook"));
+        when(mockConfiguration.get(Constants.SONAR_URL))
+                .thenReturn(Optional.of("https://dummy.com"));
+        when(mockConfiguration.get(Constants.WEBHOOK_MESSAGE_AVATAR)).thenReturn(Optional.of(""));
+
+        when(mockConfigurationRuntime.get(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of("true"));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_SEND_ON_FAILED))
+                .thenReturn(Optional.of("true"));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_URL)).thenReturn(Optional.of(""));
+        when(mockConfigurationRuntime.get(Constants.SONAR_URL)).thenReturn(Optional.of(""));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_MESSAGE_AVATAR))
+                .thenReturn(Optional.of(""));
 
         Mockito.doAnswer(
                         i -> {
@@ -171,10 +242,73 @@ public class MSTeamsPreProjectAnalysisTaskTest {
         Assert.assertEquals(
                 "https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png",
                 actualContextProperty.get(Constants.WEBHOOK_MESSAGE_AVATAR));
+        Assert.assertEquals("https://dummy.com", actualContextProperty.get(Constants.SONAR_URL));
         Assert.assertEquals(
-                "https://dummy-runtime.com", actualContextProperty.get(Constants.SONAR_URL));
-        Assert.assertEquals(
-                "https://dummy-runtime.com/hook", actualContextProperty.get(Constants.WEBHOOK_URL));
+                "https://dummy.com/hook", actualContextProperty.get(Constants.WEBHOOK_URL));
         Assert.assertEquals("true", actualContextProperty.get(Constants.WEBHOOK_SEND_ON_FAILED));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testSetupAddingContextPropertyWithInvalidSonarUrl() {
+
+        SensorContext mockSensorContext = mock(SensorContext.class);
+        Configuration mockConfiguration = mock(Configuration.class);
+        Configuration mockConfigurationRuntime = mock(Configuration.class);
+
+        when(mockSensorContext.config()).thenReturn(mockConfigurationRuntime);
+        when(mockConfiguration.getBoolean(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of(true));
+        when(mockConfiguration.get(Constants.WEBHOOK_SEND_ON_FAILED))
+                .thenReturn(Optional.of("false"));
+        when(mockConfiguration.get("sonar.core.serverBaseURL")).thenReturn(Optional.of(""));
+        when(mockConfiguration.get(Constants.WEBHOOK_URL))
+                .thenReturn(Optional.of("https://dummy.com/hook"));
+        when(mockConfiguration.get(Constants.SONAR_URL)).thenReturn(Optional.of(""));
+        when(mockConfiguration.get(Constants.WEBHOOK_MESSAGE_AVATAR)).thenReturn(Optional.of(""));
+
+        when(mockConfigurationRuntime.get(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of("true"));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_SEND_ON_FAILED))
+                .thenReturn(Optional.of("true"));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_URL)).thenReturn(Optional.of(""));
+        when(mockConfigurationRuntime.get(Constants.SONAR_URL)).thenReturn(Optional.of(""));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_MESSAGE_AVATAR))
+                .thenReturn(Optional.of(""));
+
+        MSTeamsPreProjectAnalysisTask preProjectAnalysisTask =
+                new MSTeamsPreProjectAnalysisTask(mockConfiguration);
+
+        preProjectAnalysisTask.execute(mockSensorContext);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testSetupAddingContextPropertyWithInvalidWebhookUrl() {
+
+        SensorContext mockSensorContext = mock(SensorContext.class);
+        Configuration mockConfiguration = mock(Configuration.class);
+        Configuration mockConfigurationRuntime = mock(Configuration.class);
+
+        when(mockSensorContext.config()).thenReturn(mockConfigurationRuntime);
+        when(mockConfiguration.getBoolean(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of(true));
+        when(mockConfiguration.get(Constants.WEBHOOK_SEND_ON_FAILED))
+                .thenReturn(Optional.of("false"));
+        when(mockConfiguration.get("sonar.core.serverBaseURL"))
+                .thenReturn(Optional.of("https://dummy.com"));
+        when(mockConfiguration.get(Constants.WEBHOOK_URL)).thenReturn(Optional.of(""));
+        when(mockConfiguration.get(Constants.SONAR_URL))
+                .thenReturn(Optional.of("https://dummy.com"));
+        when(mockConfiguration.get(Constants.WEBHOOK_MESSAGE_AVATAR)).thenReturn(Optional.of(""));
+
+        when(mockConfigurationRuntime.get(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of("true"));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_SEND_ON_FAILED))
+                .thenReturn(Optional.of("true"));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_URL)).thenReturn(Optional.of(""));
+        when(mockConfigurationRuntime.get(Constants.SONAR_URL))
+                .thenReturn(Optional.of("https://dummy.com"));
+        when(mockConfigurationRuntime.get(Constants.WEBHOOK_MESSAGE_AVATAR))
+                .thenReturn(Optional.of(""));
+
+        MSTeamsPreProjectAnalysisTask preProjectAnalysisTask =
+                new MSTeamsPreProjectAnalysisTask(mockConfiguration);
+
+        preProjectAnalysisTask.execute(mockSensorContext);
     }
 }
