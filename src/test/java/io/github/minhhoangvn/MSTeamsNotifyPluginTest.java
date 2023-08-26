@@ -104,7 +104,8 @@ public class MSTeamsNotifyPluginTest {
         Assert.assertEquals("Microsoft Team Notify Settings", actualPropertyDefinition.category());
         Assert.assertEquals("Webhook Send On Failed", actualPropertyDefinition.name());
         Assert.assertEquals(
-                "Only send webhook when analysis failed", actualPropertyDefinition.description());
+                "Only send notify to webhook when analysis failed",
+                actualPropertyDefinition.description());
         Assert.assertEquals("true", actualPropertyDefinition.defaultValue());
         Assert.assertEquals(PropertyType.BOOLEAN, actualPropertyDefinition.type());
         Assert.assertEquals(

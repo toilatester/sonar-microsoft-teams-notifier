@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.ce.posttask.PostProjectAnalysisTask;
 
-import java.io.IOException;
-
 public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
 
     /** Logger. */
@@ -53,7 +51,7 @@ public class MSTeamsPostProjectAnalysisTask implements PostProjectAnalysisTask {
             if (isHttpStatusInvalid(statusCode)) {
                 LOG.error("Send Sonarqube result to Microsoft Teams {}", statusCode);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("Error in sending Sonarqube result to Microsoft Team");
         }
     }
