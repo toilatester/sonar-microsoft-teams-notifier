@@ -282,6 +282,208 @@ public class MSTeamsPostProjectAnalysisTaskTest {
         Assert.assertEquals(0, requestBodyCaptureListener.getCapturedBodies().size());
     }
 
+    @Test
+    public void testFinishedWithSendNotifyHasErrorStatusCode() {
+        wireMockServer.addMockServiceRequestListener(requestBodyCaptureListener);
+        Context mockContext = Mockito.mock(Context.class);
+        ProjectAnalysis mockProjectAnalysis = mock(ProjectAnalysis.class);
+        Project mockProject = mock(Project.class);
+        CeTask mockCeTask = mock(CeTask.class);
+        ScannerContext mockScannerContext = mock(ScannerContext.class);
+        QualityGate mockQualityGate = mock(QualityGate.class);
+
+        when(mockProjectAnalysis.getProject()).thenReturn(mockProject);
+        when(mockProjectAnalysis.getCeTask()).thenReturn(mockCeTask);
+        when(mockProjectAnalysis.getQualityGate()).thenReturn(mockQualityGate);
+        when(mockProjectAnalysis.getScannerContext()).thenReturn(mockScannerContext);
+        when(mockProject.getName()).thenReturn("stub-project-name");
+        when(mockCeTask.getStatus()).thenReturn(Status.FAILED);
+        when(mockQualityGate.getStatus()).thenReturn(QualityGate.Status.OK);
+        when(mockQualityGate.getConditions()).thenReturn(List.of(stubNonRatingCondition));
+        when(mockScannerContext.getProperties())
+                .thenReturn(
+                        Map.of(
+                                "sonar.host.url",
+                                "https://toilatester.blog",
+                                "sonar.notify.microsoft.team.enable",
+                                "true",
+                                "sonar.notify.microsoft.team.webhook.url",
+                                "http://localhost:8080/mock",
+                                "sonar.notify.microsoft.team.webhook.avatar",
+                                "https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png",
+                                "sonar.notify.webhook.fail.only.enable",
+                                "true"));
+
+        Mockito.when(mockContext.getProjectAnalysis()).thenReturn(mockProjectAnalysis);
+
+        stubFor(
+                post(urlEqualTo("/mock"))
+                        .withHeader(
+                                "Content-Type", WireMock.equalTo("application/json; charset=UTF-8"))
+                        .withRequestBody(
+                                WireMock.equalToJson(
+                                        "{\"summary\":\"SonarQube Quality Gate"
+                                            + " Result\",\"themeColor\":\"0072C6\",\"@type\":\"MessageCard\",\"potentialAction\":[{\"@type\":\"OpenUri\",\"name\":\"View"
+                                            + " Analysis\",\"targets\":[{\"os\":\"default\",\"uri\":\"https://toilatester.blog/dashboard?id=null\"}]}],\"@context\":\"http://schema.org/extensions\",\"sections\":[{\"activitySubtitle\":\"Status:"
+                                            + " **FAILED**\",\"activityTitle\":\"[stub-project-name]"
+                                            + " SonarQube Analysis"
+                                            + " Result\",\"activityImage\":\"https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png\",\"markdown\":\"true\",\"facts\":[{\"name\":\"Quality"
+                                            + " Gate\",\"style\":\"Good\"},{\"name\":\"Stub Metric"
+                                            + " Key Name\",\"style\":\"Good\",\"value\":\"Status"
+                                            + " OK\\n"
+                                            + "Current value is 1\\n"
+                                            + "Threshold value 1\"}]}]}"))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(500)
+                                        .withHeader("Content-Type", "application/json")
+                                        .withBody("{\"message\": \"Mock response\"}")));
+
+        MSTeamsPostProjectAnalysisTask msTeamsPostProjectAnalysisTask =
+                new MSTeamsPostProjectAnalysisTask();
+        msTeamsPostProjectAnalysisTask.finished(mockContext);
+
+        Assert.assertEquals(
+                "{\"summary\":\"SonarQube Quality Gate"
+                    + " Result\",\"themeColor\":\"0072C6\",\"@type\":\"MessageCard\",\"potentialAction\":[{\"@type\":\"OpenUri\",\"name\":\"View"
+                    + " Analysis\",\"targets\":[{\"os\":\"default\",\"uri\":\"https://toilatester.blog/dashboard?id=null\"}]}],\"@context\":\"http://schema.org/extensions\",\"sections\":[{\"activitySubtitle\":\"Status:"
+                    + " **FAILED**\",\"activityTitle\":\"[stub-project-name] SonarQube Analysis"
+                    + " Result\",\"activityImage\":\"https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png\",\"markdown\":\"true\",\"facts\":[{\"name\":\"Quality"
+                    + " Gate\",\"style\":\"Good\"},{\"name\":\"Stub Metric Key"
+                    + " Name\",\"style\":\"Good\",\"value\":\"Status OK\\n"
+                    + "Current value is 1\\n"
+                    + "Threshold value 1\"}]}]}",
+                requestBodyCaptureListener.getCapturedBodies().get(0));
+    }
+
+    @Test
+    public void testFinishedWithNotSendNotifyWhenDisablePlugin() {
+        wireMockServer.addMockServiceRequestListener(requestBodyCaptureListener);
+        Context mockContext = Mockito.mock(Context.class);
+        ProjectAnalysis mockProjectAnalysis = mock(ProjectAnalysis.class);
+        Project mockProject = mock(Project.class);
+        CeTask mockCeTask = mock(CeTask.class);
+        ScannerContext mockScannerContext = mock(ScannerContext.class);
+        QualityGate mockQualityGate = mock(QualityGate.class);
+
+        when(mockProjectAnalysis.getProject()).thenReturn(mockProject);
+        when(mockProjectAnalysis.getCeTask()).thenReturn(mockCeTask);
+        when(mockProjectAnalysis.getQualityGate()).thenReturn(mockQualityGate);
+        when(mockProjectAnalysis.getScannerContext()).thenReturn(mockScannerContext);
+        when(mockProject.getName()).thenReturn("stub-project-name");
+        when(mockCeTask.getStatus()).thenReturn(Status.SUCCESS);
+        when(mockQualityGate.getStatus()).thenReturn(QualityGate.Status.OK);
+        when(mockQualityGate.getConditions()).thenReturn(List.of(stubNonRatingCondition));
+        when(mockScannerContext.getProperties())
+                .thenReturn(
+                        Map.of(
+                                "sonar.host.url",
+                                "https://toilatester.blog",
+                                "sonar.notify.microsoft.team.enable",
+                                "false",
+                                "sonar.notify.microsoft.team.webhook.url",
+                                "http://localhost:8080/mock",
+                                "sonar.notify.microsoft.team.webhook.avatar",
+                                "https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png",
+                                "sonar.notify.webhook.fail.only.enable",
+                                "true"));
+
+        Mockito.when(mockContext.getProjectAnalysis()).thenReturn(mockProjectAnalysis);
+
+        stubFor(
+                post(urlEqualTo("/mock"))
+                        .withHeader(
+                                "Content-Type", WireMock.equalTo("application/json; charset=UTF-8"))
+                        .withRequestBody(
+                                WireMock.equalToJson(
+                                        "{\"summary\":\"SonarQube Quality Gate"
+                                            + " Result\",\"themeColor\":\"0072C6\",\"@type\":\"MessageCard\",\"potentialAction\":[{\"@type\":\"OpenUri\",\"name\":\"View"
+                                            + " Analysis\",\"targets\":[{\"os\":\"default\",\"uri\":\"https://toilatester.blog/dashboard?id=null\"}]}],\"@context\":\"http://schema.org/extensions\",\"sections\":[{\"activitySubtitle\":\"Status:"
+                                            + " **FAILED**\",\"activityTitle\":\"[stub-project-name]"
+                                            + " SonarQube Analysis"
+                                            + " Result\",\"activityImage\":\"https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png\",\"markdown\":\"true\",\"facts\":[{\"name\":\"Quality"
+                                            + " Gate\",\"style\":\"Good\"},{\"name\":\"Stub Metric"
+                                            + " Key Name\",\"style\":\"Good\",\"value\":\"Status"
+                                            + " OK\\n"
+                                            + "Current value is 1\\n"
+                                            + "Threshold value 1\"}]}]}"))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader("Content-Type", "application/json")
+                                        .withBody("{\"message\": \"Mock response\"}")));
+
+        MSTeamsPostProjectAnalysisTask msTeamsPostProjectAnalysisTask =
+                new MSTeamsPostProjectAnalysisTask();
+        msTeamsPostProjectAnalysisTask.finished(mockContext);
+
+        Assert.assertEquals(0, requestBodyCaptureListener.getCapturedBodies().size());
+    }
+
+    @Test
+    public void testFinishedWithNotSendNotifyWhenInvalidUrlInPluginConfig() {
+        wireMockServer.addMockServiceRequestListener(requestBodyCaptureListener);
+        Context mockContext = Mockito.mock(Context.class);
+        ProjectAnalysis mockProjectAnalysis = mock(ProjectAnalysis.class);
+        Project mockProject = mock(Project.class);
+        CeTask mockCeTask = mock(CeTask.class);
+        ScannerContext mockScannerContext = mock(ScannerContext.class);
+        QualityGate mockQualityGate = mock(QualityGate.class);
+
+        when(mockProjectAnalysis.getProject()).thenReturn(mockProject);
+        when(mockProjectAnalysis.getCeTask()).thenReturn(mockCeTask);
+        when(mockProjectAnalysis.getQualityGate()).thenReturn(mockQualityGate);
+        when(mockProjectAnalysis.getScannerContext()).thenReturn(mockScannerContext);
+        when(mockProject.getName()).thenReturn("stub-project-name");
+        when(mockCeTask.getStatus()).thenReturn(Status.SUCCESS);
+        when(mockQualityGate.getStatus()).thenReturn(QualityGate.Status.OK);
+        when(mockQualityGate.getConditions()).thenReturn(List.of(stubNonRatingCondition));
+        when(mockScannerContext.getProperties())
+                .thenReturn(
+                        Map.of(
+                                "sonar.host.url",
+                                "https://toilatester.blog",
+                                "sonar.notify.microsoft.team.enable",
+                                "true",
+                                "sonar.notify.microsoft.team.webhook.url",
+                                "1212",
+                                "sonar.notify.microsoft.team.webhook.avatar",
+                                "https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png",
+                                "sonar.notify.webhook.fail.only.enable",
+                                "false"));
+
+        Mockito.when(mockContext.getProjectAnalysis()).thenReturn(mockProjectAnalysis);
+
+        stubFor(
+                post(urlEqualTo("/mock"))
+                        .withHeader(
+                                "Content-Type", WireMock.equalTo("application/json; charset=UTF-8"))
+                        .withRequestBody(
+                                WireMock.equalToJson(
+                                        "{\"summary\":\"SonarQube Quality Gate"
+                                            + " Result\",\"themeColor\":\"0072C6\",\"@type\":\"MessageCard\",\"potentialAction\":[{\"@type\":\"OpenUri\",\"name\":\"View"
+                                            + " Analysis\",\"targets\":[{\"os\":\"default\",\"uri\":\"https://toilatester.blog/dashboard?id=null\"}]}],\"@context\":\"http://schema.org/extensions\",\"sections\":[{\"activitySubtitle\":\"Status:"
+                                            + " **FAILED**\",\"activityTitle\":\"[stub-project-name]"
+                                            + " SonarQube Analysis"
+                                            + " Result\",\"activityImage\":\"https://raw.githubusercontent.com/toilatester/logo/main/toilatester.png\",\"markdown\":\"true\",\"facts\":[{\"name\":\"Quality"
+                                            + " Gate\",\"style\":\"Good\"},{\"name\":\"Stub Metric"
+                                            + " Key Name\",\"style\":\"Good\",\"value\":\"Status"
+                                            + " OK\\n"
+                                            + "Current value is 1\\n"
+                                            + "Threshold value 1\"}]}]}"))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader("Content-Type", "application/json")
+                                        .withBody("{\"message\": \"Mock response\"}")));
+
+        MSTeamsPostProjectAnalysisTask msTeamsPostProjectAnalysisTask =
+                new MSTeamsPostProjectAnalysisTask();
+        msTeamsPostProjectAnalysisTask.finished(mockContext);
+
+        Assert.assertEquals(0, requestBodyCaptureListener.getCapturedBodies().size());
+    }
+
     static class RequestBodyCaptureListener implements RequestListener {
 
         private final List<String> capturedBodies = new ArrayList<>();
