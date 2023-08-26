@@ -147,7 +147,7 @@ public class MSTeamsPreProjectAnalysisTaskTest {
         Configuration mockConfigurationRuntime = mock(Configuration.class);
 
         when(mockSensorContext.config()).thenReturn(mockConfigurationRuntime);
-        when(mockConfiguration.getBoolean(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of(true));
+        when(mockConfiguration.getBoolean(Constants.ENABLE_NOTIFY)).thenReturn(Optional.of(false));
         when(mockConfiguration.get(Constants.WEBHOOK_SEND_ON_FAILED))
                 .thenReturn(Optional.of("false"));
         when(mockConfiguration.get("sonar.core.serverBaseURL"))
